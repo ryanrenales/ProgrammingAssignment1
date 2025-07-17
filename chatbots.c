@@ -6,6 +6,7 @@
 
 #include "chatbots.h"
 
+// struct to hold thread data; thread number and semaphore
 typedef struct{
     int threadNum;
     sem_t* sem;
@@ -23,14 +24,14 @@ void create_file(){
         
     }
 
-    //Maybe add a message here indicating the file was successfully created.
-
     // Initialize variable for the current running process ID
     pid_t pid; 
     pid = getpid();
 
+    // print process ID
     fprintf(thisFile, "Process ID: %d\r\n", pid);
 
+    // close file
     fclose(thisFile);
 }
 
@@ -50,7 +51,8 @@ void* thread_function(void* arg) {
     const char* even = "Controlling complexity is the essence of computer programming. --Brian Kernighan";
     // odd numbered quote
     const char* odd  = "Computer science is no more about computers than astronomy is about telescopes. --Edsger Dijkstra";
-    
+
+    // takes thread data and assigns it to respective variables
     ThreadData* data = (ThreadData*)arg;
     int tid = data->threadNum ;
     sem_t* sem = data->sem;
@@ -92,6 +94,7 @@ void* thread_function(void* arg) {
 void create_threads(pthread_t threads[], sem_t* sem){
     //Loop to create 7 unique threads 
     for(int i = 0; i < 7; i++){
+        // takes thread data and assigns it to respective variables
         ThreadData* data = malloc(sizeof(ThreadData));
         data->threadNum = i+1;
         data->sem = sem;
