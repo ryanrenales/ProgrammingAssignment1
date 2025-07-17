@@ -10,8 +10,8 @@
 
 void create_file();
 sem_t* create_semaphore();
-void create_threads(pthread_t threads[]);
-void* thread_function(void* arg, sem_t* sem);
+void create_threads(pthread_t threads[], sem_t* sem);
+void* thread_function(void* arg);
 void destroy_semaphore(sem_t *sem);
 
 #endif // CHATBOTS_H
