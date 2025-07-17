@@ -1,5 +1,12 @@
 #include "chatbots.h"
 
 int main(){
-    return 0;
+    create_file();
+
+    sem_t FLAG = create_semaphore();
+
+    pthread_t threads[7];
+    create_threads(threads[7]);
+
+    destroy_semaphore(FLAG)
 }
