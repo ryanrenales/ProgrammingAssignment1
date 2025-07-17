@@ -1,19 +1,18 @@
+EXEC = bots
+FILES = main.c chatbots.c
 CC = gcc
-CFLAGS = -Wall -pthread
-TARGET = chatbots
-OBJS = main.o chatbots.o
+CFLAGS = -Wall -pthread -g
+OBJECTS = $(FILES:.c=.o)
 
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+$(EXEC): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(EXEC) $(OBJECTS)
+	rm -f *.o
 
-main.o: main.c chatbots.h
-	$(CC) $(CFLAGS) -c main.c
+.c.o:
+	$(CC) $(CFLAGS) -c $<
 
-chatbots.o: chatbots.c chatbots.h
-	$(CC) $(CFLAGS) -c chatbots.c
+run: $(EXEC)
+	./$(EXEC)
 
 clean:
-	rm -f $(TARGET) $(OBJS) QUOTE.txt
-
-run: $(TARGET)
-	./$(TARGET)
+	rm -f *.o core a.out QUOTE.txt $(EXEC)
