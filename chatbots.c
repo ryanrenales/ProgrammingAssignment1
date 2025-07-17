@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <sys/types.h> //Fetches specific data types for
 #include <unistd.h> //POSIX access
-#include <semaphore.h>
 #include <fcntl.h> //Allows access to file control options
-#include <pthread.h>
 
 #include "chatbots.h"
 
@@ -54,12 +52,12 @@ void* thread_function(void* arg) {
     const char* odd  = "Computer science is no more about computers than astronomy is about telescopes. --Edsger Dijkstra";
     
     ThreadData* data = (ThreadData*)arg;
-    int tid = data->threadNum;
+    int tid = data->threadNum ;
     sem_t* sem = data->sem;
 
     // repeat 8 times total
     for (int i = 0; i < 8; i++) {
-        if (threadNum % 2 == 0) {
+        if (tid % 2 == 0) {
             sleep(2); // even numbered thread
         }
         else {
@@ -70,23 +68,24 @@ void* thread_function(void* arg) {
 
         FILE* fp = fopen("QUOTE.txt", "a"); // open file QUOTE.txt
 
-        if (threadNum % 2 == 0) {
+        if (tid % 2 == 0) {
             // print thread ID followed by quote for even numbered thread
-            fprintf(fp,"Thread ID %d: \"%s\"\n", threadNum, even);
+            fprintf(fp,"Thread ID %d: \"%s\"\n", tid, even);
         }
         else {
             // print thread ID followed by quote for odd numbered thread
-            fprintf(fp,"Thread ID %d: \"%s\"\n", threadNum, odd);
+            fprintf(fp,"Thread ID %d: \"%s\"\n", tid, odd);
         }
 
         // write to the console
-        printf("Thread %d is running\n", threadNum);
+        printf("Thread %d is running\n", tid);
 
         fclose(fp); // close file QUOTE.txt
 
         sem_post(sem); // release semaphore FLAG
 
     }
+    free(data);
     return NULL; // exit
 }
 
@@ -97,11 +96,15 @@ void create_threads(pthread_t threads[], sem_t* sem){
         data->threadNum = i+1;
         data->sem = sem;
         //Check that the threads are successfully created
-        printf("Creating thread, in main(): %\n", data->threadNum);
+        printf("Creating thread, in main(): %d\n", data->threadNum);
         if(pthread_create(&threads[i], NULL, thread_function, data) != 0){
-            printf("Error: Unsuccessful thread creation -> Thread %d", i);
+            printf("Error: Unsuccessful thread creation -> Thread %d", i+1);
         }
-        free(data);
+    }
+
+    //Wait for the threads to complete their work
+    for (int i = 0; i < 7; i++) {
+        pthread_join(threads[i], NULL);
     }
 
 }
