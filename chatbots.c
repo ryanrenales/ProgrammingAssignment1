@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h> //Fetches specific data types for
 #include <unistd.h> //POSIX access
 #include <semaphore.h>
@@ -6,6 +7,11 @@
 #include <pthread.h>
 
 #include "chatbots.h"
+
+typedef struct{
+    int threadNum;
+    sem_t* sem;
+} ThreadData;
 
 void create_file(){
     FILE *thisFile;
@@ -41,12 +47,15 @@ sem_t* create_semaphore(){
     return sem;
 }
 
-void* thread_function(void* arg, sem_t* sem) {
+void* thread_function(void* arg) {
     // even numbered quote
     const char* even = "Controlling complexity is the essence of computer programming. --Brian Kernighan";
     // odd numbered quote
     const char* odd  = "Computer science is no more about computers than astronomy is about telescopes. --Edsger Dijkstra";
-    int threadNum = *(int*)arg; // thread number
+    
+    ThreadData* data = (ThreadData*)arg;
+    int tid = data->threadNum;
+    sem_t* sem = data->sem;
 
     // repeat 8 times total
     for (int i = 0; i < 8; i++) {
@@ -81,13 +90,18 @@ void* thread_function(void* arg, sem_t* sem) {
     return NULL; // exit
 }
 
-void create_threads(pthread_t threads[]){
+void create_threads(pthread_t threads[], sem_t* sem){
     //Loop to create 7 unique threads 
     for(int i = 0; i < 7; i++){
+        ThreadData* data = malloc(sizeof(ThreadData));
+        data->threadNum = i+1;
+        data->sem = sem;
         //Check that the threads are successfully created
-        if(pthread_create(&threads[i], NULL, thread_function, NULL) != 0){
+        printf("Creating thread, in main(): %\n", data->threadNum);
+        if(pthread_create(&threads[i], NULL, thread_function, data) != 0){
             printf("Error: Unsuccessful thread creation -> Thread %d", i);
         }
+        free(data);
     }
 
 }
