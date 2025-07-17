@@ -1,13 +1,47 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
+#include <sys/types.h> //Fetches specific data types for
+#include <unistd.h> //POSIX access
 #include <semaphore.h>
-#include <string.h>
+#include <fcntl.h> //Allows access to file control options
+#include <pthread.h>
 
-sem_t FLAG; // Semaphore FLAG
+#include "chatbots.h"
 
-void* thread(void* arg) {
+void create_file(){
+    FILE *thisFile;
+
+    // Create the QUOTE.txt file 
+    thisFile = fopen("QUOTE.txt", "w");
+
+    // Checks that the file was successfully created
+    if(thisFile == NULL){
+        printf("Attempt to create QUOTE.txt was unsuccessful\n");
+        
+    }
+
+    //Maybe add a message here indicating the file was successfully created.
+
+    // Initialize variable for the current running process ID
+    pid_t pid; 
+    pid = getpid();
+
+    fprintf(thisFile, "Process ID: %d\r\n", pid);
+
+    fclose(thisFile);
+}
+
+sem_t* create_semaphore(){
+    // Creates the pointer and sets values for the semaphore
+    sem_t *sem;
+    const char *sem_name = "/FLAG";
+    unsigned int initial_value = 1;
+
+    // Initializes the named semaphore
+    sem = sem_open(sem_name, O_CREAT, 0666, initial_value);
+    return sem;
+}
+
+void* thread_function(void* arg, sem_t* sem) {
     // even numbered quote
     const char* even = "Controlling complexity is the essence of computer programming. --Brian Kernighan";
     // odd numbered quote
@@ -23,7 +57,7 @@ void* thread(void* arg) {
             sleep(3); // odd numbered thread
         }
 
-        sem_wait(&FLAG); // get semaphore flag
+        sem_wait(sem); // get semaphore flag
 
         FILE* fp = fopen("QUOTE.txt", "a"); // open file QUOTE.txt
 
@@ -41,10 +75,32 @@ void* thread(void* arg) {
 
         fclose(fp); // close file QUOTE.txt
 
-        sem_post(&FLAG); // release semaphore FLAG
+        sem_post(sem); // release semaphore FLAG
 
     }
     return NULL; // exit
+}
 
+void create_threads(pthread_t threads[]){
+    //Loop to create 7 unique threads 
+    for(int i = 0; i < 7; i++){
+        //Check that the threads are successfully created
+        if(pthread_create(&threads[i], NULL, thread_function, NULL) != 0){
+            printf("Error: Unsuccessful thread creation -> Thread %d", i);
+        }
+    }
+
+}
+
+void destroy_semaphore(sem_t *sem) {
+    //Checks that the named sempahore is properly closed and unlinked
+    if (sem_close(sem) == -1) {
+        perror("Error: Failed to close semaphore");
+    }
+    if (sem_unlink("/FLAG") == -1) {
+        perror("Error: Failed to unlink semaphore");
+    } else {
+        printf("Semaphore was successfully destroyed\n");
+    }
 }
 
