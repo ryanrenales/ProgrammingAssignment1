@@ -3,10 +3,10 @@
 int main(){
     create_file();
 
-    sem_t sem = create_semaphore();
+    sem_t* sem = create_semaphore();
 
     pthread_t threads[7];
-    create_threads(threads);
+    create_threads(threads, sem);
 
     destroy_semaphore(sem);
 
