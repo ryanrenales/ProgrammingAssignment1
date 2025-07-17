@@ -1,21 +1,19 @@
-#exectuable name
-Target = chatbots
-
-#Compiler and flags
 CC = gcc
 CFLAGS = -Wall -pthread
+TARGET = chatbots
+OBJS = main.o chatbots.o
 
-# Source and object files
-SRC = main.c
-OBJ = $(SRC:.c=.o)
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
 
-# Default target
-all: $(TARGET)
+main.o: main.c chatbots.h
+	$(CC) $(CFLAGS) -c main.c
 
-# Build the executable
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
+chatbots.o: chatbots.c chatbots.h
+	$(CC) $(CFLAGS) -c chatbots.c
 
-# Clean up build files
 clean:
-	rm -f $(TARGET) $(OBJ)
+	rm -f $(TARGET) $(OBJS) QUOTE.txt
+
+run: $(TARGET)
+	./$(TARGET)
