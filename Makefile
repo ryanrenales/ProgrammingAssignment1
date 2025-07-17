@@ -1,6 +1,7 @@
 EXEC = bots
 FILES = main.c chatbots.c
 CC = gcc
+LFLAGS = -g
 CFLAGS = -Wall -pthread -g
 OBJECTS = $(FILES:.c=.o)
 
