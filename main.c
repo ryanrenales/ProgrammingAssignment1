@@ -3,12 +3,12 @@
 int main(){
     create_file();
 
-    sem_t FLAG = create_semaphore();
+    sem_t sem = create_semaphore();
 
     pthread_t threads[7];
-    create_threads(threads[7]);
+    create_threads(threads);
 
-    destroy_semaphore(FLAG);
+    destroy_semaphore(sem);
 
     return 0;
 }
