@@ -8,5 +8,7 @@ int main(){
     pthread_t threads[7];
     create_threads(threads[7]);
 
-    destroy_semaphore(FLAG)
+    destroy_semaphore(FLAG);
+
+    return 0;
 }
