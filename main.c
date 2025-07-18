@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "chatbots.h"
 
 int main(){
@@ -14,6 +16,8 @@ int main(){
 
     // destroys the semaphore
     destroy_semaphore(sem);
+
+    printf("The process has completed.\n");
 
     return 0;
 }
