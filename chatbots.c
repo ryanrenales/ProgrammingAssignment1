@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h> //Fetches specific data types for
-#include <unistd.h> //POSIX access
-#include <fcntl.h> //Allows access to file control options
+#include <sys/types.h> // Fetches system-level data types 
+#include <unistd.h> // POSIX access
+#include <fcntl.h> // Allows access to file control options
 
 #include "chatbots.h"
 
@@ -20,15 +20,15 @@ void create_file(){
 
     // Checks that the file was successfully created
     if(thisFile == NULL){
-        printf("Attempt to create QUOTE.txt was unsuccessful\n");
-        
+        perror("Error: Attempt to create QUOTE.txt was unsuccessful");
+        exit(1); // exit with error
     }
 
     // Initialize variable for the current running process ID
     pid_t pid; 
     pid = getpid();
 
-    // print process ID
+    // write process ID to file
     fprintf(thisFile, "Process ID: %d\r\n", pid);
 
     // close file
@@ -98,14 +98,14 @@ void create_threads(pthread_t threads[], sem_t* sem){
         ThreadData* data = malloc(sizeof(ThreadData));
         data->threadNum = i+1;
         data->sem = sem;
-        //Check that the threads are successfully created
+        // Check that the threads are successfully created
         printf("Creating thread, in main(): %d\n", data->threadNum);
         if(pthread_create(&threads[i], NULL, thread_function, data) != 0){
             printf("Error: Unsuccessful thread creation -> Thread %d", i+1);
         }
     }
 
-    //Wait for the threads to complete their work
+    // Wait for the threads to complete their work
     for (int i = 0; i < 7; i++) {
         pthread_join(threads[i], NULL);
     }
@@ -113,14 +113,14 @@ void create_threads(pthread_t threads[], sem_t* sem){
 }
 
 void destroy_semaphore(sem_t *sem) {
-    //Checks that the named sempahore is properly closed and unlinked
+    // Checks that the named sempahore is properly closed and unlinked
     if (sem_close(sem) == -1) {
         perror("Error: Failed to close semaphore");
     }
     if (sem_unlink("/FLAG") == -1) {
         perror("Error: Failed to unlink semaphore");
     } else {
-        printf("Semaphore was successfully destroyed\n");
+        printf("Semaphore was successfully destroyed.\n");
     }
 }
 
