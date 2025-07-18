@@ -1,3 +1,9 @@
+#Team Members: Kevin Townsend, Ryan Renales
+#Class Accounts: cssc1461 (Kevin), cssc1453 (Ryan) 
+#Class Info: CS 480, Summer 2025 
+#Assignment Info: Programming Assignment #1, Chatbots 
+#Filename: Makefile
+
 EXEC = bots
 FILES = main.c chatbots.c
 CC = gcc
